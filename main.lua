@@ -6,9 +6,16 @@ end
 
 function love.update(dt)
     if gameState == "playing" then
-        x = x + 100 * dt
-        if x > love.graphics.getWidth() then
-            x = 0
+        if love.keyboard.isDown("left") then
+            x = x - 200 * dt
+            if x < 0 then
+                x = 0
+            end
+        elseif love.keyboard.isDown("right") then
+            x = x + 200 * dt
+            if x > love.graphics.getWidth() - 50 then
+                x = love.graphics.getWidth() - 50
+            end
         end
     end
 end
