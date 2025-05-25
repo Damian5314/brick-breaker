@@ -1,7 +1,10 @@
+paddleWidth = 50
+paddleHeight = 50
+
 function love.load()
-    x = 50
-    y = 50
     gameState = "start"
+    x = 50
+    y = love.graphics.getHeight() - paddleHeight - 10
 end
 
 function love.update(dt)
@@ -13,8 +16,8 @@ function love.update(dt)
             end
         elseif love.keyboard.isDown("right") then
             x = x + 200 * dt
-            if x > love.graphics.getWidth() - 50 then
-                x = love.graphics.getWidth() - 50
+            if x > love.graphics.getWidth() - paddleWidth then
+                x = love.graphics.getWidth() - paddleWidth
             end
         end
     end
@@ -26,7 +29,7 @@ function love.draw()
         love.graphics.print("Press SPACE to start", 10, 10)
 
     elseif gameState == "playing" then
-        love.graphics.rectangle("fill", x, y, 50, 50)
+        love.graphics.rectangle("fill", x, y, paddleWidth, paddleHeight)
 
     elseif gameState == "win" then
         love.graphics.print("YOU WIN! Press R to restart", 10, 10)
