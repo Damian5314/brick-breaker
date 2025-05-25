@@ -1,14 +1,22 @@
-paddleWidth = 50
-paddleHeight = 50
+paddleWidth = 100
+paddleHeight = 20
 
 function love.load()
     gameState = "start"
     x = 50
     y = love.graphics.getHeight() - paddleHeight - 10
+
+    ballX = 52
+    ballY = 10
+    radius = 10
 end
 
 function love.update(dt)
     if gameState == "playing" then
+        ballY = ballY + 100 * dt
+        if ballY > love.graphics.getHeight() then
+            gameState = "lose"
+        end
         if love.keyboard.isDown("left") then
             x = x - 200 * dt
             if x < 0 then
@@ -30,6 +38,7 @@ function love.draw()
 
     elseif gameState == "playing" then
         love.graphics.rectangle("fill", x, y, paddleWidth, paddleHeight)
+        love.graphics.circle("fill", ballX, ballY, radius)
 
     elseif gameState == "win" then
         love.graphics.print("YOU WIN! Press R to restart", 10, 10)
