@@ -11,15 +11,41 @@ function love.load()
     ballY = 10
     ballSpeedY = 100
     radius = 10
+    blocks = {}
+
+    blockWidth = 60
+    blockHeight = 20
+
+    for row = 1, 3 do
+        for col = 1, 10 do
+            local block = {
+                x = (col - 1) * (blockWidth + 5) + 30,
+                y = row * (blockHeight + 5),
+                hit = false
+            }
+            table.insert(blocks, block)
+        end
+    end
+    
 end
 
 function love.update(dt)
     if gameState == "playing" then
-        -- Paddle collision
         if ballY + radius >= y and ballY + radius <= y + paddleHeight and
            ballX + radius >= x and ballX - radius <= x + paddleWidth then
             ballSpeedY = -ballSpeedY
-            ballY = y - radius  -- Position the ball above the paddle
+            ballY = y - radius
+        end
+        for _, block in ipairs(blocks) do
+            if not block.hit and
+                ballX + radius > block.x and
+                ballX - radius < block.x + blockWidth and
+                ballY + radius > block.y and
+                ballY - radius < block.y + blockHeight then
+
+                block.hit = true
+                ballSpeedY = -ballSpeedY
+            end
         end
         ballX = ballX + ballSpeedX * dt
         ballY = ballY + ballSpeedY * dt
@@ -54,6 +80,11 @@ function love.draw()
     elseif gameState == "playing" then
         love.graphics.rectangle("fill", x, y, paddleWidth, paddleHeight)
         love.graphics.circle("fill", ballX, ballY, radius)
+        for _, block in ipairs(blocks) do
+            if not block.hit then
+                love.graphics.rectangle("fill", block.x, block.y, blockWidth, blockHeight)
+            end
+        end
 
     elseif gameState == "win" then
         love.graphics.print("YOU WIN! Press R to restart", 10, 10)
