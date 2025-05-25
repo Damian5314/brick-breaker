@@ -7,13 +7,28 @@ function love.load()
     y = love.graphics.getHeight() - paddleHeight - 10
 
     ballX = 52
+    ballSpeedX = 100
     ballY = 10
+    ballSpeedY = 100
     radius = 10
 end
 
 function love.update(dt)
     if gameState == "playing" then
-        ballY = ballY + 100 * dt
+        -- Paddle collision
+        if ballY + radius >= y and ballY + radius <= y + paddleHeight and
+           ballX + radius >= x and ballX - radius <= x + paddleWidth then
+            ballSpeedY = -ballSpeedY
+            ballY = y - radius  -- Position the ball above the paddle
+        end
+        ballX = ballX + ballSpeedX * dt
+        ballY = ballY + ballSpeedY * dt
+        if ballX < 0 or ballX > love.graphics.getWidth() - radius then
+            ballSpeedX = -ballSpeedX
+        end
+        if ballY < 0 then
+            ballSpeedY = -ballSpeedY
+        end
         if ballY > love.graphics.getHeight() then
             gameState = "lose"
         end
