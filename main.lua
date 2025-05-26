@@ -1,8 +1,15 @@
 paddleWidth = 100
 paddleHeight = 20
 
+function resetBall()
+    ballX = x + paddleWidth / 2
+    ballY = y - radius
+    ballSpeedY = -math.abs(ballSpeedY)
+end
+
 function love.load()
     gameState = "start"
+    lives = 3
     x = 50
     y = love.graphics.getHeight() - paddleHeight - 10
 
@@ -56,7 +63,12 @@ function love.update(dt)
             ballSpeedY = -ballSpeedY
         end
         if ballY > love.graphics.getHeight() then
-            gameState = "lose"
+            lives = lives - 1
+            if lives <= 0 then
+                gameState = "lose"
+            else
+                resetBall()
+            end
         end
         if love.keyboard.isDown("left") then
             x = x - 200 * dt
@@ -89,6 +101,7 @@ function love.draw()
         love.graphics.print("Press SPACE to start", 10, 10)
 
     elseif gameState == "playing" then
+        love.graphics.print("Lives: " .. lives, 10, 30)
         love.graphics.rectangle("fill", x, y, paddleWidth, paddleHeight)
         love.graphics.circle("fill", ballX, ballY, radius)
         for _, block in ipairs(blocks) do
