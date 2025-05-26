@@ -21,14 +21,19 @@ When you break a block, there's a chance an upgrade will drop. Catch it with you
 | Extra Life    | Green        | Gain an extra life                           |
 | Multiball     | Yellow       | Splits ball(s) into two for more action      |
 
-## Block Colors
-- Block color varies by row: higher rows are lighter blue, lower rows are darker.
+## Block Types & Colors
+- **Normal Block (Blue):** Standard block, breaks in one hit.
+- **Hard Block (Orange):** Takes two hits to break. Shows remaining health as a number.
+- **Unbreakable Block (Gray):** Cannot be destroyed, acts as an obstacle.
 
 ## Features
 - Multiple levels (each level adds more rows of blocks)
+- Three block types: normal, hard (2 hits), and unbreakable
 - Score and lives tracking
-- Five unique upgrades
+- Five unique upgrades, each with a distinct color and effect
 - Pause and restart functionality
+- Multiball chaos and row-clearing powerups
+- Hard blocks display their remaining health
 
 ## Requirements
 - [LÖVE 2D](https://love2d.org/) (Love2D) engine
