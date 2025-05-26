@@ -9,6 +9,10 @@ end
 
 function love.load()
     gameState = "start"
+    level = 1
+    blockWidth = 60
+    blockHeight = 20  
+    loadLevel(level)
     lives = 3
     score = 0
     x = 50
@@ -19,12 +23,14 @@ function love.load()
     ballY = 10
     ballSpeedY = 100
     radius = 10
+    
+end
+
+
+function loadLevel(level)
     blocks = {}
-
-    blockWidth = 60
-    blockHeight = 20
-
-    for row = 1, 3 do
+    local rows = 2 + level
+    for row = 1, rows do
         for col = 1, 10 do
             local block = {
                 x = (col - 1) * (blockWidth + 5) + 30,
@@ -34,7 +40,6 @@ function love.load()
             table.insert(blocks, block)
         end
     end
-    
 end
 
 function love.update(dt)
@@ -92,7 +97,10 @@ function love.update(dt)
         end
 
         if allHit then
-            gameState = "win"
+            level = level + 1
+            loadLevel(level)
+            resetBall()
+            gameState = "start"
         end
     end
 end
