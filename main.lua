@@ -10,6 +10,7 @@ end
 function love.load()
     gameState = "start"
     lives = 3
+    score = 0
     x = 50
     y = love.graphics.getHeight() - paddleHeight - 10
 
@@ -52,6 +53,7 @@ function love.update(dt)
 
                 block.hit = true
                 ballSpeedY = -ballSpeedY
+                score = score + 10
             end
         end
         ballX = ballX + ballSpeedX * dt
@@ -102,6 +104,7 @@ function love.draw()
 
     elseif gameState == "playing" then
         love.graphics.print("Lives: " .. lives, 10, 30)
+        love.graphics.print("Score: " .. score, 10, 50)
         love.graphics.rectangle("fill", x, y, paddleWidth, paddleHeight)
         love.graphics.circle("fill", ballX, ballY, radius)
         for _, block in ipairs(blocks) do
