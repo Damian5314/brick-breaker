@@ -40,7 +40,7 @@ function loadLevel(level)
             local blockType = blockTypes[math.random(#blockTypes)]
             local block = {
                 x = (col - 1) * (blockWidth + 5) + 30,
-                y = row * (blockHeight + 5),
+                y = 120 + row * (blockHeight + 5),
                 type = blockType,
                 hit = false,
                 health = blockType == "hard" and 2 or 1
