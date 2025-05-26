@@ -102,10 +102,7 @@ function love.update(dt)
     end
 
     if allHit then
-        level = level + 1
-        loadLevel(level)
-        resetBall()
-        gameState = "start"
+        gameState = "win"
     end
 end
 
@@ -127,7 +124,8 @@ function love.draw()
         end
 
     elseif gameState == "win" then
-        love.graphics.print("YOU WIN! Press R to restart", 10, 10)
+        love.graphics.printf("Level " .. level .. " voltooid!", 0, 10, love.graphics.getWidth(), "center")
+        love.graphics.printf("Druk op SPACE om door te gaan naar level " .. (level + 1), 0, 30, love.graphics.getWidth(), "center")
 
     elseif gameState == "lose" then
         love.graphics.print("GAME OVER! Press R to restart", 10, 10)
@@ -139,13 +137,20 @@ function love.draw()
 end
 
 function love.keypressed(key)
+    if gameState == "win" and key == "space" then
+        level = level + 1
+        loadLevel(level)
+        resetBall()
+        gameState = "start"
+        return
+    end
     if gameState == "start" and key == "space" then
         gameState = "playing"
-    elseif (gameState == "win" or gameState == "lose") and key == "r" then
+    elseif (gameState == "lose") and key == "r" then
         love.load()
     elseif gameState == "playing" and key == "escape" then
         gameState = "paused"
     elseif gameState == "paused" and key == "escape" then
         gameState = "playing"
-    end
+    end 
 end
