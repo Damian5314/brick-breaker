@@ -69,6 +69,17 @@ function love.update(dt)
                 x = love.graphics.getWidth() - paddleWidth
             end
         end
+        local allHit = true
+        for _, block in ipairs(blocks) do
+            if not block.hit then
+                allHit = false
+                break
+            end
+        end
+
+        if allHit then
+            gameState = "win"
+        end
     end
 end
 
