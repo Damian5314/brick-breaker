@@ -8,6 +8,8 @@ function resetBall()
 end
 
 function love.load()
+    defaultFont = love.graphics.newFont(14)
+    titleFont = love.graphics.newFont(32)
     gameState = "start"
     level = 1
     blockWidth = 60
@@ -108,33 +110,65 @@ end
 
 
 function love.draw()
+    love.graphics.clear(0.05, 0.05, 0.05)
+
+    love.graphics.setColor(0.15, 0.15, 0.15)
+    love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), 100)
+
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.setFont(defaultFont)
+    love.graphics.print("Lives: " .. lives, 10, 30)
+    love.graphics.print("Score: " .. score, 10, 50)
+    love.graphics.print("Level: " .. level, 10, 70)
+
     if gameState == "start" then
-        love.graphics.print("Press SPACE to start", 10, 10)
+        love.graphics.setFont(titleFont)
+        love.graphics.printf("Press SPACE to start", 0, love.graphics.getHeight() / 2 - 40, love.graphics.getWidth(), "center")
 
     elseif gameState == "playing" then
-        love.graphics.print("Lives: " .. lives, 10, 30)
-        love.graphics.print("Score: " .. score, 10, 50)
-        love.graphics.print("Level: " .. level, 10, 70)
-        love.graphics.rectangle("fill", x, y, paddleWidth, paddleHeight)
+        love.graphics.setColor(0.2, 0.6, 1)
+        love.graphics.rectangle("fill", x, y, paddleWidth, paddleHeight, 10, 10)
+
+        love.graphics.setColor(1, 0.8, 0.2)
         love.graphics.circle("fill", ballX, ballY, radius)
+
         for _, block in ipairs(blocks) do
             if not block.hit then
-                love.graphics.rectangle("fill", block.x, block.y, blockWidth, blockHeight)
+                local rowIndex = math.floor((block.y - (blockHeight + 5)) / (blockHeight + 5)) + 1
+                local r = 0.2 + rowIndex * 0.1
+                local g = 0.4
+                local b = 1 - rowIndex * 0.05
+                love.graphics.setColor(r, g, b)
+                love.graphics.rectangle("fill", block.x, block.y, blockWidth, blockHeight, 5, 5)
             end
         end
 
     elseif gameState == "win" then
-        love.graphics.printf("Level " .. level .. " voltooid!", 0, 10, love.graphics.getWidth(), "center")
-        love.graphics.printf("Druk op SPACE om door te gaan naar level " .. (level + 1), 0, 30, love.graphics.getWidth(), "center")
+        love.graphics.setFont(titleFont)
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.printf("Level " .. level .. " voltooid!", 0, 100, love.graphics.getWidth(), "center")
+        love.graphics.setFont(defaultFont)
+        love.graphics.printf("Druk op SPACE om door te gaan naar level " .. (level + 1), 0, 140, love.graphics.getWidth(), "center")
 
     elseif gameState == "lose" then
-        love.graphics.print("GAME OVER! Press R to restart", 10, 10)
+        love.graphics.setFont(titleFont)
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.printf("GAME OVER", 0, 100, love.graphics.getWidth(), "center")
+        love.graphics.setFont(defaultFont)
+        love.graphics.printf("Druk op R om opnieuw te starten", 0, 140, love.graphics.getWidth(), "center")
     end
 
     if gameState == "paused" then
-        love.graphics.printf("PAUSED\nDruk ESC om verder te gaan", 0, love.graphics.getHeight()/2 - 30, love.graphics.getWidth(), "center")
+        love.graphics.setColor(0, 0, 0, 0.6)
+        love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.setFont(titleFont)
+        love.graphics.printf("PAUZE", 0, love.graphics.getHeight()/2 - 40, love.graphics.getWidth(), "center")
+        love.graphics.setFont(defaultFont)
+        love.graphics.printf("Druk op ESC om verder te gaan", 0, love.graphics.getHeight()/2, love.graphics.getWidth(), "center")
     end
 end
+
 
 function love.keypressed(key)
     if gameState == "win" and key == "space" then
