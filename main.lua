@@ -34,12 +34,16 @@ end
 function loadLevel(level)
     blocks = {}
     local rows = 2 + level
+    local blockTypes = { "normal", "hard", "unbreakable" }
     for row = 1, rows do
         for col = 1, 10 do
+            local blockType = blockTypes[math.random(#blockTypes)]
             local block = {
                 x = (col - 1) * (blockWidth + 5) + 30,
                 y = row * (blockHeight + 5),
-                hit = false
+                type = blockType,
+                hit = false,
+                health = blockType == "hard" and 2 or 1
             }
             table.insert(blocks, block)
         end
@@ -73,18 +77,24 @@ function love.update(dt)
                 ball.y + radius > block.y and
                 ball.y - radius < block.y + blockHeight then
 
-                block.hit = true
-                ball.speedY = -ball.speedY
-                score = score + 10
+                if block.type ~= "unbreakable" then
+                    block.health = block.health - 1
+                    if block.health <= 0 then
+                        block.hit = true
+                        score = score + 10
 
-                if math.random() < 0.2 then
-                    table.insert(upgrades, {
-                        x = block.x + blockWidth / 2,
-                        y = block.y,
-                        type = upgradeTypes[math.random(#upgradeTypes)],
-                        active = true
-                    })
+                        if math.random() < 0.2 then
+                            table.insert(upgrades, {
+                                x = block.x + blockWidth / 2,
+                                y = block.y,
+                                type = upgradeTypes[math.random(#upgradeTypes)],
+                                active = true
+                            })
+                        end
+                    end
                 end
+
+                ball.speedY = -ball.speedY
             end
         end
 
@@ -124,7 +134,7 @@ function love.update(dt)
 
     local allHit = true
     for _, block in ipairs(blocks) do
-        if not block.hit then
+        if block.type ~= "unbreakable" and not block.hit then
             allHit = false
             break
         end
@@ -161,12 +171,20 @@ function love.draw()
 
         for _, block in ipairs(blocks) do
             if not block.hit then
-                local rowIndex = math.floor((block.y - (blockHeight + 5)) / (blockHeight + 5)) + 1
-                local r = 0.2 + rowIndex * 0.1
-                local g = 0.4
-                local b = 1 - rowIndex * 0.05
-                love.graphics.setColor(r, g, b)
+                if block.type == "normal" then
+                    love.graphics.setColor(0.2, 0.6, 1)
+                elseif block.type == "hard" then
+                    love.graphics.setColor(1, 0.4, 0.2)
+                elseif block.type == "unbreakable" then
+                    love.graphics.setColor(0.5, 0.5, 0.5)
+                end
                 love.graphics.rectangle("fill", block.x, block.y, blockWidth, blockHeight, 5, 5)
+
+                if block.type == "hard" then
+                    love.graphics.setColor(1, 1, 1)
+                    love.graphics.setFont(defaultFont)
+                    love.graphics.printf(tostring(block.health), block.x, block.y + 2, blockWidth, "center")
+                end
             end
         end
 
@@ -212,7 +230,6 @@ function love.draw()
         love.graphics.printf("Druk op ESC om verder te gaan", 0, love.graphics.getHeight() / 2, love.graphics.getWidth(), "center")
     end
 end
-
 function applyUpgrade(type)
     if type == "biggerPaddle" then
         paddleWidth = paddleWidth + 30
