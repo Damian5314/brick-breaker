@@ -117,6 +117,7 @@ function love.draw()
     elseif gameState == "playing" then
         love.graphics.print("Lives: " .. lives, 10, 30)
         love.graphics.print("Score: " .. score, 10, 50)
+        love.graphics.print("Level: " .. level, 10, 70)
         love.graphics.rectangle("fill", x, y, paddleWidth, paddleHeight)
         love.graphics.circle("fill", ballX, ballY, radius)
         for _, block in ipairs(blocks) do
