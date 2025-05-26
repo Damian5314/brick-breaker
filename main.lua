@@ -11,7 +11,7 @@ function love.load()
     gameState = "start"
     level = 1
     blockWidth = 60
-    blockHeight = 20  
+    blockHeight = 20
     loadLevel(level)
     lives = 3
     score = 0
@@ -43,65 +43,69 @@ function loadLevel(level)
 end
 
 function love.update(dt)
-    if gameState == "playing" then
-        if ballY + radius >= y and ballY + radius <= y + paddleHeight and
-           ballX + radius >= x and ballX - radius <= x + paddleWidth then
-            ballSpeedY = -ballSpeedY
-            ballY = y - radius
-        end
-        for _, block in ipairs(blocks) do
-            if not block.hit and
-                ballX + radius > block.x and
-                ballX - radius < block.x + blockWidth and
-                ballY + radius > block.y and
-                ballY - radius < block.y + blockHeight then
+    if gameState ~= "playing" then
+        return
+    end
+    if ballY + radius >= y and ballY + radius <= y + paddleHeight and
+       ballX + radius >= x and ballX - radius <= x + paddleWidth then
+        ballSpeedY = -ballSpeedY
+        ballY = y - radius
+    end
 
-                block.hit = true
-                ballSpeedY = -ballSpeedY
-                score = score + 10
-            end
-        end
-        ballX = ballX + ballSpeedX * dt
-        ballY = ballY + ballSpeedY * dt
-        if ballX < 0 or ballX > love.graphics.getWidth() - radius then
-            ballSpeedX = -ballSpeedX
-        end
-        if ballY < 0 then
-            ballSpeedY = -ballSpeedY
-        end
-        if ballY > love.graphics.getHeight() then
-            lives = lives - 1
-            if lives <= 0 then
-                gameState = "lose"
-            else
-                resetBall()
-            end
-        end
-        if love.keyboard.isDown("left") then
-            x = x - 200 * dt
-            if x < 0 then
-                x = 0
-            end
-        elseif love.keyboard.isDown("right") then
-            x = x + 200 * dt
-            if x > love.graphics.getWidth() - paddleWidth then
-                x = love.graphics.getWidth() - paddleWidth
-            end
-        end
-        local allHit = true
-        for _, block in ipairs(blocks) do
-            if not block.hit then
-                allHit = false
-                break
-            end
-        end
+    for _, block in ipairs(blocks) do
+        if not block.hit and
+            ballX + radius > block.x and
+            ballX - radius < block.x + blockWidth and
+            ballY + radius > block.y and
+            ballY - radius < block.y + blockHeight then
 
-        if allHit then
-            level = level + 1
-            loadLevel(level)
+            block.hit = true
+            ballSpeedY = -ballSpeedY
+            score = score + 10
+        end
+    end
+
+    ballX = ballX + ballSpeedX * dt
+    ballY = ballY + ballSpeedY * dt
+
+    if ballX < 0 or ballX > love.graphics.getWidth() - radius then
+        ballSpeedX = -ballSpeedX
+    end
+    if ballY < 0 then
+        ballSpeedY = -ballSpeedY
+    end
+    if ballY > love.graphics.getHeight() then
+        lives = lives - 1
+        if lives <= 0 then
+            gameState = "lose"
+        else
             resetBall()
-            gameState = "start"
         end
+    end
+
+    if love.keyboard.isDown("left") then
+        x = x - 200 * dt
+        if x < 0 then x = 0 end
+    elseif love.keyboard.isDown("right") then
+        x = x + 200 * dt
+        if x > love.graphics.getWidth() - paddleWidth then
+            x = love.graphics.getWidth() - paddleWidth
+        end
+    end
+
+    local allHit = true
+    for _, block in ipairs(blocks) do
+        if not block.hit then
+            allHit = false
+            break
+        end
+    end
+
+    if allHit then
+        level = level + 1
+        loadLevel(level)
+        resetBall()
+        gameState = "start"
     end
 end
 
@@ -127,6 +131,10 @@ function love.draw()
     elseif gameState == "lose" then
         love.graphics.print("GAME OVER! Press R to restart", 10, 10)
     end
+
+    if gameState == "paused" then
+        love.graphics.printf("PAUSED\nDruk ESC om verder te gaan", 0, love.graphics.getHeight()/2 - 30, love.graphics.getWidth(), "center")
+    end
 end
 
 function love.keypressed(key)
@@ -134,5 +142,9 @@ function love.keypressed(key)
         gameState = "playing"
     elseif (gameState == "win" or gameState == "lose") and key == "r" then
         love.load()
+    elseif gameState == "playing" and key == "escape" then
+        gameState = "paused"
+    elseif gameState == "paused" and key == "escape" then
+        gameState = "playing"
     end
 end
